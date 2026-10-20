@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsNumber, IsString } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { GetQueryDto } from '../../../../common/queryString.dto';
 
@@ -14,4 +14,17 @@ export class IncomeQueryDto extends GetQueryDto {
   })
   @IsString()
   committeeId: string = '';
+
+  @ApiPropertyOptional({
+    description: 'Minimum Amount range filter',
+  })
+  @IsNumber()
+  minAmount: number = -1;
+
+  @ApiPropertyOptional({
+    description: 'Maximum Amount range filter',
+  })
+  @IsNumber()
+  maxAmount: number = -1;
+
 }

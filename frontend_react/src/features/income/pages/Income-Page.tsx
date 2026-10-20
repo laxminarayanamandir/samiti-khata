@@ -9,6 +9,7 @@ import {
   PageSection,
 } from "@/components/shared/page";
 import { useState } from "react";
+import { useDebounce } from "@/hooks/use-debounce";
 import useGetIncomes from "../hooks/useGetIncomes";
 import IncomeDataTable from "../components/Income-Data-Table";
 import { incomeDataTableColumns } from "../components/Income-Columns";
@@ -25,8 +26,18 @@ export default function IncomePage() {
   const [sortDirection, setSortDirection] = useState<SortDir | null>("desc");
   const [receiptBookId, setReceiptBookId] = useState<string | null>(null);
   const [committeeId, setCommitteeId] = useState<string | null>(null);
+  const [minAmount, setMinAmount] = useState("");
+  const [maxAmount, setMaxAmount] = useState("");
+  const debouncedMinAmount = useDebounce(minAmount, 600);
+  const debouncedMaxAmount = useDebounce(maxAmount, 600);
 
-  const { data: incomeResponse, isPending } = useGetIncomes({
+  const parseAmount = (amount: string) => {
+    if (!amount.trim()) return undefined;
+    const value = Number(amount);
+    return Number.isFinite(value) ? value : undefined;
+  };
+
+  const { data: incomeResponse, isFetching } = useGetIncomes({
     pageIndex: pagination.pageIndex + 1,
     pageSize: pagination.pageSize,
     sortDir: sortDirection ?? "desc",
@@ -34,6 +45,8 @@ export default function IncomePage() {
     searchColumn,
     receiptBookId: receiptBookId ?? "",
     committeeId: committeeId ?? "",
+    minAmount: parseAmount(debouncedMinAmount),
+    maxAmount: parseAmount(debouncedMaxAmount),
   });
 
   const searchableColumns: SearchableColumn[] = [
@@ -61,7 +74,7 @@ export default function IncomePage() {
         <IncomeDataTable
           data={incomeResponse?.data}
           columns={incomeDataTableColumns}
-          isLoading={isPending}
+          isLoading={isFetching}
           search={{
             searchKey,
             searchColumn,
@@ -80,8 +93,12 @@ export default function IncomePage() {
           }}
           committeeId={committeeId}
           receiptBookId={receiptBookId}
+          minAmount={minAmount}
+          maxAmount={maxAmount}
           setCommitteeId={setCommitteeId}
           setReceiptBookId={setReceiptBookId}
+          setMinAmount={setMinAmount}
+          setMaxAmount={setMaxAmount}
         />
       </PageSection>
     </PageLayout>

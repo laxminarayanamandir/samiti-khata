@@ -11,6 +11,8 @@ export default function useGetIncomes({
   searchColumn,
   receiptBookId,
   committeeId,
+  minAmount,
+  maxAmount,
 }: IncomeQueryParams) {
   return useQuery({
     queryKey: [
@@ -23,6 +25,8 @@ export default function useGetIncomes({
       searchColumn,
       receiptBookId,
       committeeId,
+      minAmount,
+      maxAmount,
     ],
     enabled: searchColumn && !searchKey ? false : true,
     queryFn: () =>
@@ -34,6 +38,8 @@ export default function useGetIncomes({
         searchColumn,
         receiptBookId,
         committeeId,
+        minAmount,
+        maxAmount,
       }),
     placeholderData: keepPreviousData,
   });

@@ -27,6 +27,8 @@ export type Search = {
 export type IncomeQueryParams = PaginatedQueryString & {
   receiptBookId?: string | null;
   committeeId?: string | null;
+  minAmount?: number;
+  maxAmount?: number;
 };
 
 export type ExpenseQueryParams = PaginatedQueryString & {

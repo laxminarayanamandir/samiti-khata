@@ -21,6 +21,7 @@ import SelectCommitteeFilter from "@/features/committees/components";
 import { SelectReceiptBookFilter } from "@/features/receipt-books/components";
 import { ClearFilterButton } from "@/components/shared/data-table/components";
 import UpdateIncomeReceiptSheet from "./Update-Income-Receipt-Sheet";
+import { Input } from "@/components/ui/input";
 
 type Props<TData extends RowData> = {
   data?: TData[];
@@ -48,8 +49,12 @@ type Props<TData extends RowData> = {
 
   committeeId: string | null;
   receiptBookId: string | null;
+  minAmount: string;
+  maxAmount: string;
   setCommitteeId: Dispatch<SetStateAction<string | null>>;
   setReceiptBookId: Dispatch<SetStateAction<string | null>>;
+  setMinAmount: Dispatch<SetStateAction<string>>;
+  setMaxAmount: Dispatch<SetStateAction<string>>;
 };
 
 export default function IncomeDataTable<TData extends RowData>({
@@ -61,8 +66,12 @@ export default function IncomeDataTable<TData extends RowData>({
   sorting,
   committeeId,
   receiptBookId,
+  minAmount,
+  maxAmount,
   setCommitteeId,
   setReceiptBookId,
+  setMinAmount,
+  setMaxAmount,
 }: Props<TData>) {
   const [clickedRowId, setClickedRowId] = useState<number | null>(null);
 
@@ -93,6 +102,8 @@ export default function IncomeDataTable<TData extends RowData>({
   const handleClearFilters = () => {
     setCommitteeId(null);
     setReceiptBookId(null);
+    setMinAmount("");
+    setMaxAmount("");
     search.setSearchKey("");
     search.setSearchColumn("");
     sorting.setSortDirection("desc");
@@ -104,7 +115,7 @@ export default function IncomeDataTable<TData extends RowData>({
 
   return (
     <div className="space-y-6 flex min-h-0 flex-col">
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-3">
         <DataTableSearch
           key={search.searchKey}
           search={search}
@@ -122,6 +133,31 @@ export default function IncomeDataTable<TData extends RowData>({
           committeeId={committeeId}
           setCommitteeId={setCommitteeId}
         />
+
+        <div
+          className="flex items-center gap-2"
+          role="group"
+          aria-label="Amount range"
+        >
+          <Input
+            type="string"
+            step="any"
+            className="w-28"
+            aria-label="Minimum amount"
+            placeholder="Min amount"
+            value={minAmount}
+            onChange={(event) => setMinAmount(event.target.value)}
+          />
+          <Input
+            type="string"
+            step="any"
+            className="w-28"
+            aria-label="Maximum amount"
+            placeholder="Max amount"
+            value={maxAmount}
+            onChange={(event) => setMaxAmount(event.target.value)}
+          />
+        </div>
 
         <DataTableSort sorting={sorting} />
 
