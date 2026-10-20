@@ -14,8 +14,12 @@ import useGetIncomes from "../hooks/useGetIncomes";
 import IncomeDataTable from "../components/Income-Data-Table";
 import { incomeDataTableColumns } from "../components/Income-Columns";
 import AddIncomeReceiptSheet from "../components/Add-Income-Receipt-Sheet";
+import useExportIncomes from "../hooks/useExportIncomes";
+import { Button } from "@/components/ui/button";
+import { Download, Loader2 } from "lucide-react";
 
 export default function IncomePage() {
+  const { mutate: exportIncomes, isPending: isExporting } = useExportIncomes();
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 25,
@@ -68,7 +72,33 @@ export default function IncomePage() {
     <PageLayout>
       <PageHeader>
         <PageHeading title="Income" description="Manage organization income." />
-        <AddIncomeReceiptSheet />
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            disabled={isExporting}
+            onClick={() =>
+              exportIncomes({
+                pageIndex: pagination.pageIndex + 1,
+                pageSize: pagination.pageSize,
+                sortDir: sortDirection ?? "desc",
+                searchKey,
+                searchColumn,
+                receiptBookId: receiptBookId ?? "",
+                committeeId: committeeId ?? "",
+                minAmount: parseAmount(minAmount),
+                maxAmount: parseAmount(maxAmount),
+              })
+            }
+          >
+            {isExporting ? (
+              <Loader2 className="animate-spin" />
+            ) : (
+              <Download />
+            )}
+            {isExporting ? "Exporting..." : "Export Excel"}
+          </Button>
+          <AddIncomeReceiptSheet />
+        </div>
       </PageHeader>
       <PageSection>
         <IncomeDataTable

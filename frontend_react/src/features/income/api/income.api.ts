@@ -43,6 +43,16 @@ export async function getIncomes({
   return response.data;
 }
 
+export async function exportIncomes(
+  query: IncomeQueryParams,
+): Promise<Blob> {
+  const response = await axiosInstance.get("/income/export", {
+    params: query,
+    responseType: "blob",
+  });
+  return response.data;
+}
+
 export async function getIncomeDetails(
   incomeId: number | null,
 ): Promise<Income> {
