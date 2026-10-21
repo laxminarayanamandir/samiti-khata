@@ -90,7 +90,7 @@ export function AppSidebar() {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className="border-t border-sidebar-border pt-3">
         {user && (
           <SidebarMenu>
             <SidebarMenuItem>
