@@ -23,6 +23,21 @@ export default function buildIncomeWhereClause(
     whereClause.committeeId = Number(query.committeeId);
   }
 
+  if (query.minAmount >= 0 && query.maxAmount >= 0) {
+    whereClause.amount = {
+      gte: query.minAmount,
+      lte: query.maxAmount,
+    };
+  } else if (query.minAmount >= 0) {
+    whereClause.amount = {
+      gte: query.minAmount,
+    };
+  } else if (query.maxAmount >= 0) {
+    whereClause.amount = {
+      lte: query.maxAmount,
+    };
+  }
+
   if (!searchColumn || !searchKey) {
     return whereClause;
   }

@@ -11,3 +11,8 @@ export async function me():Promise<LoggedInUser> {
   const response = await axiosInstance.get(`/auth/me`);
   return response.data.data;
 }
+
+export async function logout() {
+  const response = await axiosInstance.post("/auth/logout");
+  return response.data;
+}

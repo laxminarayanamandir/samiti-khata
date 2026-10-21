@@ -24,10 +24,32 @@ export async function getIncomes({
   searchColumn = "",
   receiptBookId = "",
   committeeId = "",
+  minAmount,
+  maxAmount,
 }: IncomeQueryParams): Promise<APIResponsePaginated<Income[]>> {
-  const response = await axiosInstance.get(
-    `/income?pageSize=${pageSize}&pageIndex=${pageIndex}&sortDir=${sortDir}&searchKey=${searchKey}&searchColumn=${searchColumn}&receiptBookId=${receiptBookId}&committeeId=${committeeId}`,
-  );
+  const response = await axiosInstance.get("/income", {
+    params: {
+      pageSize,
+      pageIndex,
+      sortDir,
+      searchKey,
+      searchColumn,
+      receiptBookId,
+      committeeId,
+      minAmount,
+      maxAmount,
+    },
+  });
+  return response.data;
+}
+
+export async function exportIncomes(
+  query: IncomeQueryParams,
+): Promise<Blob> {
+  const response = await axiosInstance.get("/income/export", {
+    params: query,
+    responseType: "blob",
+  });
   return response.data;
 }
 

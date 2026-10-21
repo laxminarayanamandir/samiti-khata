@@ -10,8 +10,10 @@ import {
   Post,
   Put,
   Query,
+  Res,
   UnprocessableEntityException,
 } from '@nestjs/common';
+import type { Response } from 'express';
 import { IncomeService } from './income.service';
 import { type UserJwtPayload } from '@shared/auth';
 import buildIncomeWhereClause from './lib/buildIncomeWhereClause';
@@ -20,7 +22,6 @@ import {
   SoftDeleteIncomeDto,
   UpdateIncomeDto,
 } from './lib/income.dto';
-import { GetQueryDto } from '../../../common/queryString.dto';
 import { GetUser } from '@shared/auth/decorators/getUser.decorator';
 import { RequireAdminOrOperator } from '@shared/auth/decorators/adminOrOperator.decorator';
 import { IncomeQueryDto } from './lib/income.query.dto';
@@ -45,6 +46,28 @@ export class IncomeController {
   ) {
     const whereClause = buildIncomeWhereClause(organizationId, query);
     return await this.incomeService.getFilteredIncomes(whereClause, query);
+  }
+
+  @Get('export')
+  async exportIncomes(
+    @GetUser('organizationId') organizationId: number,
+    @Query() query: IncomeQueryDto,
+    @Res() response: Response,
+  ) {
+    const whereClause = buildIncomeWhereClause(organizationId, query);
+    const workbook = await this.incomeService.exportFilteredIncomes(
+      whereClause,
+      query.sortDir,
+    );
+
+    response.set({
+      'Content-Type':
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'Content-Disposition': 'attachment; filename="income-export.xlsx"',
+      'Content-Length': workbook.length,
+    });
+
+    return response.send(workbook);
   }
 
   @Get(':id')

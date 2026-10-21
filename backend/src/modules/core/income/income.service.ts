@@ -1,6 +1,5 @@
 import { PrismaService } from '@shared/prisma';
 import { Income, Prisma } from '@prisma/client';
-import { SortDirection } from '../../../common/types';
 import { Decimal } from '@prisma/client/runtime/client';
 import { ActivityLogService } from '@shared/activity-log';
 import { Injectable } from '@nestjs/common';
@@ -8,6 +7,7 @@ import { IncomeDto, UpdateIncomeDto } from './lib/income.dto';
 import findDiffsForUpdate from '../../../common/findDiffsForUpdate';
 import { LogInfo, TActivityLog } from '@shared/activity-log/lib/types';
 import { GetQueryDto } from '../../../common/queryString.dto';
+import ExcelJS from 'exceljs';
 
 @Injectable()
 export class IncomeService {
@@ -78,6 +78,68 @@ export class IncomeService {
         totalPages: Math.ceil(totalRows / queryDto.pageSize),
       },
     };
+  }
+
+  async exportFilteredIncomes(
+    whereClause: Prisma.IncomeWhereInput,
+    sortDir: 'asc' | 'desc',
+  ): Promise<Buffer> {
+    const incomes = await this.prisma.income.findMany({
+      where: whereClause,
+      include: {
+        receiptBook: {
+          select: {
+            bookNumber: true,
+          },
+        },
+        Committee: {
+          select: {
+            name: true,
+          },
+        },
+      },
+      orderBy: {
+        id: sortDir,
+      },
+    });
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Income');
+    worksheet.columns = [
+      { header: 'Date', key: 'date', width: 14 },
+      { header: 'Nepali Date', key: 'nepaliDate', width: 16 },
+      { header: 'Receipt Book', key: 'receiptBook', width: 16 },
+      { header: 'Receipt Number', key: 'receiptNumber', width: 18 },
+      { header: 'Name', key: 'name', width: 24 },
+      { header: 'Address', key: 'address', width: 30 },
+      { header: 'Amount', key: 'amount', width: 16 },
+      { header: 'Payment Mode', key: 'paymentMode', width: 16 },
+      { header: 'Committee', key: 'committee', width: 24 },
+      { header: 'Remarks', key: 'remarks', width: 30 },
+    ];
+    worksheet.getRow(1).font = { bold: true };
+    worksheet.views = [{ state: 'frozen', ySplit: 1 }];
+    worksheet.autoFilter = 'A1:J1';
+
+    for (const income of incomes) {
+      worksheet.addRow({
+        date: income.date,
+        nepaliDate: income.nepaliDate,
+        receiptBook: income.receiptBook?.bookNumber ?? '',
+        receiptNumber: income.receiptNumber,
+        name: income.name,
+        address: income.address,
+        amount: Number(income.amount),
+        paymentMode: income.paymentMode,
+        committee: income.Committee.name,
+        remarks: income.remarks,
+      });
+    }
+
+    worksheet.getColumn('date').numFmt = 'yyyy-mm-dd';
+    worksheet.getColumn('amount').numFmt = '#,##0.00';
+
+    return Buffer.from(await workbook.xlsx.writeBuffer());
   }
 
   async getById(id: number, organizationId: number) {
