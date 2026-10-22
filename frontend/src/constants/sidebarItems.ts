@@ -10,8 +10,6 @@ import {
   LayoutDashboard,
   List,
   Logs,
-  Search,
-  UserCog,
   Users,
 } from "lucide-react";
 import { Role } from "./roles";
@@ -44,19 +42,6 @@ export const sidebarNavItems: SidebarItems[] = [
         icon: CircleArrowUp,
         title: "Expense",
         url: "/expense",
-        allowedRoles: [Role.ADMIN, Role.OPERATOR],
-      },
-    ],
-  },
-
-  {
-    title: "Reports",
-    url: "/reports",
-    items: [
-      {
-        icon: Search,
-        title: "Search Records",
-        url: "/reports",
         allowedRoles: [Role.ADMIN, Role.OPERATOR],
       },
     ],
@@ -135,12 +120,6 @@ export const sidebarNavItems: SidebarItems[] = [
         title: "Fiscal Year",
         url: "/fiscal-year",
         allowedRoles: [Role.ADMIN],
-      },
-      {
-        icon: UserCog,
-        title: "Profile",
-        url: "/profile",
-        allowedRoles: [Role.ADMIN, Role.OPERATOR],
       },
       {
         icon: Cog,

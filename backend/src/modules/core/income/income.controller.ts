@@ -4,10 +4,10 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Post,
   Param,
   ParseIntPipe,
   Patch,
-  Post,
   Put,
   Query,
   Res,
@@ -25,6 +25,7 @@ import {
 import { GetUser } from '@shared/auth/decorators/getUser.decorator';
 import { RequireAdminOrOperator } from '@shared/auth/decorators/adminOrOperator.decorator';
 import { IncomeQueryDto } from './lib/income.query.dto';
+import { IncomeExportDto, IncomeExportScope } from './lib/income-export.dto';
 
 @Controller('income')
 @RequireAdminOrOperator()
@@ -48,17 +49,25 @@ export class IncomeController {
     return await this.incomeService.getFilteredIncomes(whereClause, query);
   }
 
-  @Get('export')
+  @Post('export')
   async exportIncomes(
-    @GetUser('organizationId') organizationId: number,
-    @Query() query: IncomeQueryDto,
+    @GetUser() user: UserJwtPayload,
+    @Body() exportDto: IncomeExportDto,
     @Res() response: Response,
   ) {
-    const whereClause = buildIncomeWhereClause(organizationId, query);
-    const workbook = await this.incomeService.exportFilteredIncomes(
+    if (!user.organizationId)
+      throw new UnprocessableEntityException('Organization Id not found.');
+
+    const whereClause = buildIncomeWhereClause(user.organizationId, exportDto);
+    const workbook = await this.incomeService.exportIncomes({
       whereClause,
-      query.sortDir,
-    );
+      query: exportDto,
+      userId: user.userId,
+      organizationId: user.organizationId,
+      scope: exportDto.scope,
+      password: exportDto.password,
+      paginate: exportDto.scope === IncomeExportScope.CURRENT_PAGE,
+    });
 
     response.set({
       'Content-Type':

@@ -8,6 +8,9 @@ import findDiffsForUpdate from '../../../common/findDiffsForUpdate';
 import { LogInfo, TActivityLog } from '@shared/activity-log/lib/types';
 import { GetQueryDto } from '../../../common/queryString.dto';
 import ExcelJS from 'exceljs';
+import { compare } from 'bcrypt';
+import { UnauthorizedException } from '@nestjs/common';
+import { IncomeExportDto, IncomeExportScope } from './lib/income-export.dto';
 
 @Injectable()
 export class IncomeService {
@@ -83,6 +86,7 @@ export class IncomeService {
   async exportFilteredIncomes(
     whereClause: Prisma.IncomeWhereInput,
     sortDir: 'asc' | 'desc',
+    pagination?: Pick<GetQueryDto, 'pageIndex' | 'pageSize'>,
   ): Promise<Buffer> {
     const incomes = await this.prisma.income.findMany({
       where: whereClause,
@@ -101,6 +105,10 @@ export class IncomeService {
       orderBy: {
         id: sortDir,
       },
+      ...(pagination && {
+        skip: (pagination.pageIndex - 1) * pagination.pageSize,
+        take: pagination.pageSize,
+      }),
     });
 
     const workbook = new ExcelJS.Workbook();
@@ -140,6 +148,74 @@ export class IncomeService {
     worksheet.getColumn('amount').numFmt = '#,##0.00';
 
     return Buffer.from(await workbook.xlsx.writeBuffer());
+  }
+
+  async exportIncomes({
+    whereClause,
+    query,
+    userId,
+    organizationId,
+    scope,
+    password,
+    paginate,
+  }: {
+    whereClause: Prisma.IncomeWhereInput;
+    query: IncomeExportDto;
+    userId: number;
+    organizationId: number;
+    scope: IncomeExportScope;
+    password: string;
+    paginate: boolean;
+  }) {
+    const user = await this.prisma.user.findFirst({
+      where: { id: userId, deletedAt: null },
+      select: { password: true },
+    });
+
+    if (!user || !(await compare(password, user.password))) {
+      throw new UnauthorizedException('Invalid password.');
+    }
+
+    const workbook = await this.exportFilteredIncomes(
+      whereClause,
+      query.sortDir,
+      paginate
+        ? { pageIndex: query.pageIndex, pageSize: query.pageSize }
+        : undefined,
+    );
+
+    await this.prisma.$transaction(async (tx) => {
+      const payload: TActivityLog = {
+        action: 'EXPORT',
+        committeeId: query.committeeId ? Number(query.committeeId) : null,
+        currentData: JSON.stringify({
+          scope,
+          filters: {
+            searchKey: query.searchKey,
+            searchColumn: query.searchColumn,
+            receiptBookId: query.receiptBookId || null,
+            committeeId: query.committeeId || null,
+            minAmount: query.minAmount >= 0 ? query.minAmount : null,
+            maxAmount: query.maxAmount >= 0 ? query.maxAmount : null,
+          },
+          ...(paginate && {
+            pageIndex: query.pageIndex,
+            pageSize: query.pageSize,
+          }),
+        }),
+        description:
+          scope === IncomeExportScope.CURRENT_PAGE
+            ? 'Exported current page of income data.'
+            : 'Exported all matching income data.',
+        entityType: 'INCOME',
+        organizationId,
+        previousData: null,
+        userId,
+      };
+      await this.activityLog.create(payload, tx);
+    });
+
+    return workbook;
   }
 
   async getById(id: number, organizationId: number) {
@@ -204,7 +280,7 @@ export class IncomeService {
           createdBy: existingData.createdBy,
           deletedAt: existingData.deletedAt,
           receiptImageUrl: '',
-          remarks: incomeDto.remarks ?? "",
+          remarks: incomeDto.remarks ?? '',
           date: incomeDto.date as unknown as Date,
           receiptIssuerId: incomeDto.receiptIssuerId ?? null,
           subCommitteeId: incomeDto.subCommitteeId ?? null,
