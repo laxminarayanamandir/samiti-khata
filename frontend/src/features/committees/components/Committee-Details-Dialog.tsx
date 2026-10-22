@@ -10,7 +10,6 @@ import {
 import clsx from "clsx";
 import { EditIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { getFormattedDate } from "@/lib/formatDateTime";
 import useGetCommitteeDetails from "../hooks/useGetCommitteeDetails";
 import getNepaliDate from "@/lib/getNepaliDate";
 

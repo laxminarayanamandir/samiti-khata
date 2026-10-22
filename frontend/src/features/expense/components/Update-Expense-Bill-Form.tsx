@@ -1,6 +1,4 @@
 import type {
-  CreateExpenseForm,
-  CreateExpensePayload,
   UpdateExpenseForm,
   UpdateExpensePayload,
 } from "../schemas/expense.schema";

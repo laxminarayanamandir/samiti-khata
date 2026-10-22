@@ -1,4 +1,4 @@
-import { toast } from "@/components/ui/toast";
+import { toast } from "sonner";
 import { useMutation } from "@tanstack/react-query";
 import { ACTIONS, MODULES } from "@/constants/constants";
 import { createOrgMember } from "../api/org-member.api";
@@ -9,9 +9,7 @@ export default function useCreateOrgMember() {
     mutationFn: createOrgMember,
     mutationKey: [ACTIONS.CREATE, MODULES.ORG_MEMBERS],
     onSuccess: () => {
-      toast.add({
-        title: "Member created successfully.",
-      });
+      toast.success("Member created successfully.");
     },
   });
 

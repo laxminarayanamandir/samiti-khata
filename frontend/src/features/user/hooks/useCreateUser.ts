@@ -1,5 +1,5 @@
 import { createUser } from "../api/user.api";
-import { toast } from "@/components/ui/toast";
+import { toast } from "sonner";
 import { useMutation } from "@tanstack/react-query";
 import { ACTIONS, MODULES } from "@/constants/constants";
 import type { UserSchema } from "../schemas/user.schema";
@@ -9,9 +9,7 @@ export default function useCreateUser() {
     mutationFn: createUser,
     mutationKey: [ACTIONS.CREATE, MODULES.USER],
     onSuccess: () => {
-      toast.add({
-        title: "User created successfully.",
-      });
+      toast.success("User created successfully.");
     },
   });
 

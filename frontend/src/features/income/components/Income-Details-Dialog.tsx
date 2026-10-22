@@ -30,7 +30,7 @@ export default function IncomeDetailsDialog({
   onDeleteClick,
   onUpdateClick,
 }: Props) {
-  const { data, isPending } = useGetIncomeDetails(id);
+  const { data } = useGetIncomeDetails(id);
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
