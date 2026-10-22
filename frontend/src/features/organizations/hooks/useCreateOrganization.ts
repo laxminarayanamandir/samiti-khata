@@ -1,4 +1,4 @@
-import { toast } from "@/components/ui/toast";
+import { toast } from "sonner";
 import { useMutation } from "@tanstack/react-query";
 import { ACTIONS, MODULES } from "@/constants/constants";
 import { createOrganization } from "../api/organizations.api";
@@ -9,9 +9,7 @@ export default function useCreateOrganization() {
     mutationFn: createOrganization,
     mutationKey: [ACTIONS.CREATE, MODULES.ORGANIZATION],
     onSuccess: () => {
-      toast.add({
-        title: "Organization created successfully.",
-      });
+      toast.success("Organization created successfully.");
     },
   });
 

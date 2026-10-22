@@ -19,9 +19,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { subCommitteeSchema } from "../schemas/committee.schema";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import useCreateSubCommittee from "../hooks/useCreateSubCommittee";
-import useGetCommittees from "../hooks/useGetCommittees";
-import SelectField from "@/components/shared/form/Select-Field";
-import getTransformedSelectOptions from "@/lib/getTransformedSelectOptions";
 import { SubmitButton } from "@/components/shared/form";
 
 export default function CreateSubCommitteeDialog() {
