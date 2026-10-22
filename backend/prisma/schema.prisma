@@ -235,6 +235,7 @@ model UserOrganization {
 enum EntityAction {
   UPDATE
   DELETE
+  EXPORT
   APPROVE
   SUSPEND
   ACTIVATE

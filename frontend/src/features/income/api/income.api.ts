@@ -1,7 +1,10 @@
 import axiosInstance from "@/lib/axios";
 import type { Income } from "../types/income.types";
 import type { IncomeQueryParams } from "@/types/pagination.types";
-import type { CreateIncomePayload, UpdateIncomePayload } from "../schemas/income.schema";
+import type {
+  CreateIncomePayload,
+  UpdateIncomePayload,
+} from "../schemas/income.schema";
 import type { APIResponsePaginated } from "@/types/apiResponse.types";
 import type { ModifyReasonSchema } from "@/schema/reason.schema";
 
@@ -11,7 +14,7 @@ export async function createIncome(data: CreateIncomePayload) {
 }
 
 export async function updateIncome(data: UpdateIncomePayload) {
-  const {id, ...payload} = data 
+  const { id, ...payload } = data;
   const response = await axiosInstance.put(`/income/${id}`, payload);
   return response.data.data;
 }
@@ -44,10 +47,12 @@ export async function getIncomes({
 }
 
 export async function exportIncomes(
-  query: IncomeQueryParams,
+  payload: IncomeQueryParams & {
+    password: string;
+    scope: "all-matching" | "current-page";
+  },
 ): Promise<Blob> {
-  const response = await axiosInstance.get("/income/export", {
-    params: query,
+  const response = await axiosInstance.post("/income/export", payload, {
     responseType: "blob",
   });
   return response.data;
