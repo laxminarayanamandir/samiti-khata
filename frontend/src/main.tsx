@@ -1,66 +1,78 @@
-import "./index.css"
-import { StrictMode } from "react"
-import { store } from "./app/store.ts"
-import { Provider } from "react-redux"
-import router from "./routes/routes.tsx"
-import { createRoot } from "react-dom/client"
-import { RouterProvider } from "react-router-dom"
-import { TooltipProvider } from "./components/ui/tooltip.tsx"
-import { ThemeProvider } from "@/components/common/theme-provider.tsx"
-import {
-  MutationCache,
-  QueryCache,
-  QueryClient,
-  QueryClientProvider,
-} from "@tanstack/react-query"
-import { toast } from "sonner"
+import "./index.css";
+import { isAxiosError } from "axios";
+import useAuth from "./contexts/useAuth";
+import { routeTree } from "./routeTree.gen";
+import { StrictMode, useEffect } from "react";
+import { createRoot } from "react-dom/client";
+import AuthProvider from "./contexts/Auth-Provider";
+import { TooltipProvider } from "./components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { RouterProvider, createRouter } from "@tanstack/react-router";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { ThemeProvider } from "./contexts/Theme-Provider";
+
+function isRetryableError(error: unknown): boolean {
+  if (!isAxiosError(error) || !error.response) {
+    // network errors or timeouts — retryable
+    return true;
+  }
+
+  const status = error.response.status;
+  // retry on 408 (timeout), 429 (rate limit), and 5xx (server errors)
+  return status === 408 || status === 429 || status >= 500;
+}
 
 const queryClient = new QueryClient({
-  queryCache: new QueryCache({
-    onError: (error: Error) => {
-      toast.error(error.message || "An error occurred while fetching data.")
-    },
-  }),
-  mutationCache: new MutationCache({
-    onError: (error: Error) => {
-      toast.error(
-        error.message || "An error occurred while performing the operation."
-      )
-    },
-  }),
   defaultOptions: {
     queries: {
-      retry: (failureCount, error: any) => {
-        const status = error?.status
-        if (status && status >= 400 && status < 500) {
-          return false // Don't retry for client errors
-        }
-        return failureCount < 3 // Retry up to 3 times for other errors
-      },
+      staleTime: 2 * 60 * 1000,
       refetchOnWindowFocus: false,
-      staleTime: 6000, // 1 minute
+      retry: (failureCount: number, error: unknown): boolean => {
+        if (!isRetryableError(error)) return false;
+        return failureCount < 3;
+      },
     },
   },
-})
+});
 
-declare global {
-  interface Window {
-    __TANSTACK_QUERY_CLIENT__: import("@tanstack/query-core").QueryClient
+const router = createRouter({
+  routeTree,
+  defaultPreload: false,
+  scrollRestoration: true,
+  context: {
+    queryClient,
+    auth: undefined!,
+  },
+});
+
+declare module "@tanstack/react-router" {
+  interface Register {
+    router: typeof router;
   }
 }
 
-window.__TANSTACK_QUERY_CLIENT__ = queryClient
+function AuthenticatedRouter() {
+  const auth = useAuth();
+
+  // re-generate route when auth changes
+  useEffect(() => {
+    router.invalidate();
+  }, [auth]);
+
+  return <RouterProvider router={router} context={{ queryClient, auth }} />;
+}
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <Provider store={store}>
-      <QueryClientProvider client={queryClient}>
-          <ThemeProvider>
-            <TooltipProvider>
-              <RouterProvider router={router} />
-            </TooltipProvider>
-          </ThemeProvider>
-      </QueryClientProvider>
-    </Provider>
-  </StrictMode>
-)
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <TooltipProvider>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <AuthenticatedRouter />
+          </AuthProvider>
+          <ReactQueryDevtools initialIsOpen={false} />
+        </QueryClientProvider>
+      </TooltipProvider>
+    </ThemeProvider>
+  </StrictMode>,
+);

@@ -1,6 +1,6 @@
-const formatNepaliCurrency = (currency: number) => {
-  const npr = new Intl.NumberFormat("en-IN").format(currency)
-  return `Rs. ${npr}`
+export function formatNPR(value: number): string {
+  return `Rs. ${new Intl.NumberFormat("en-IN", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  }).format(value)}`;
 }
-
-export default formatNepaliCurrency
