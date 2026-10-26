@@ -17,6 +17,7 @@ export class ReceiptBookService {
         receiptStartingNumber: receiptBookDto.receiptStartingNumber,
         receiptEndingNumber: receiptBookDto.receiptEndingNumber,
         fiscalYearId: receiptBookDto.fiscalYearId,
+        committeeId: receiptBookDto.committeeId,
         assignedTo: receiptBookDto.assignedTo,
         assignedAt: receiptBookDto.assignedAt,
         status: receiptBookDto.status,
@@ -35,6 +36,14 @@ export class ReceiptBookService {
       take: limit + 1,
       where: {
         organizationId,
+      },
+      include: {
+        committee: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
       ...(cursor
         ? {
@@ -84,6 +93,12 @@ export class ReceiptBookService {
               name: true,
             },
           },
+          committee: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
         },
         skip: (queryDto.pageIndex - 1) * queryDto.pageSize,
         take: queryDto.pageSize,
@@ -122,6 +137,12 @@ export class ReceiptBookService {
           },
         },
         fiscalYear: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        committee: {
           select: {
             id: true,
             name: true,

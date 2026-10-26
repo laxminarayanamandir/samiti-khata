@@ -39,6 +39,11 @@ export class ReceiptBookDto {
   @IsNumber()
   fiscalYearId!: number;
 
+  @ApiPropertyOptional({ nullable: true })
+  @IsOptional()
+  @IsNumber()
+  committeeId?: number | null;
+
   @ApiPropertyOptional()
   @IsOptional()
   @IsNumber()

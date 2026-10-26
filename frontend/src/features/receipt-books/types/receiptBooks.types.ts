@@ -9,6 +9,10 @@ export type ReceiptBook = ReceiptBookSchema &
       id: number;
       name: string;
     };
+    committee: {
+      id: number;
+      name: string;
+    } | null;
     assignedMember: null | {
       id: number;
       name: string;

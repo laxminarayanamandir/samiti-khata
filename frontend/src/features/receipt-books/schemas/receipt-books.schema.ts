@@ -36,6 +36,14 @@ export const receiptBookSchema = z
       })
       .transform((num) => Number(num)),
 
+    committeeId: z
+      .string()
+      .regex(/^\d*$/, {
+        error: "Invalid Committee.",
+      })
+      .transform((num) => (num.length > 0 ? Number(num) : undefined))
+      .optional(),
+
     status: z.enum(BookStatus),
 
     assignedTo: z
