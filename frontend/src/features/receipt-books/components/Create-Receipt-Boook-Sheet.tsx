@@ -35,12 +35,14 @@ import SelectField from "@/components/shared/form/Select-Field";
 import getTransformedSelectOptions from "@/lib/getTransformedSelectOptions";
 import { BookStatusOptions } from "@/constants/bookStatus";
 import { SubmitButton } from "@/components/shared/form";
+import useGetCommittees from "@/features/committees/hooks/useGetCommittees";
 
 export default function CreateReceiptBookSheet() {
   const [addMore, setAddMore] = useState(false);
   const [open, setOpen] = useState(false);
   const { data: fiscalYears } = useGetFiscalYears();
   const { data: orgMembers } = useGetOrgMembers();
+  const { data: committees } = useGetCommittees();
 
   const form = useForm<ReceiptBookForm, unknown, ReceiptBookSchema>({
     resolver: zodResolver(receiptBookSchema),
@@ -48,6 +50,7 @@ export default function CreateReceiptBookSheet() {
       assignedAt: "",
       assignedTo: "",
       bookNumber: "",
+      committeeId: "",
       fiscalYearId: "",
       receiptEndingNumber: "",
       receiptStartingNumber: "",
@@ -100,6 +103,17 @@ export default function CreateReceiptBookSheet() {
                 name="fiscalYearId"
                 options={getTransformedSelectOptions({
                   data: fiscalYears,
+                  labelKey: "name",
+                  valueKey: "id",
+                })}
+              />
+
+              <SelectField
+                fieldLabel="Committee"
+                control={form.control}
+                name="committeeId"
+                options={getTransformedSelectOptions({
+                  data: committees,
                   labelKey: "name",
                   valueKey: "id",
                 })}

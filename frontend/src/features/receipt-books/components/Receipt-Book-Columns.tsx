@@ -28,6 +28,10 @@ export const receiptBookDataTableColumns = columnHelper.columns([
   columnHelper.accessor("fiscalYear.name", {
     header: "Fiscal Year",
   }),
+  columnHelper.accessor("committee.name", {
+    header: "Committee",
+    cell: ({ getValue }) => getValue() ?? "-",
+  }),
   columnHelper.accessor("bookNumber", {
     header: "Book Number",
   }),
