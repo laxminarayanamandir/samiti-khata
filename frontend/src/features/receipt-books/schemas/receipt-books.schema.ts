@@ -38,11 +38,11 @@ export const receiptBookSchema = z
 
     committeeId: z
       .string()
-      .regex(/^\d*$/, {
+      .min(1, "Committee is required.")
+      .regex(/^[1-9]\d*$/, {
         error: "Invalid Committee.",
       })
-      .transform((num) => (num.length > 0 ? Number(num) : undefined))
-      .optional(),
+      .transform((num) => Number(num)),
 
     status: z.enum(BookStatus),
 

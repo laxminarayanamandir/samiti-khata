@@ -112,7 +112,6 @@ export default function CreateReceiptBookSheet() {
                 fieldLabel="Committee"
                 control={form.control}
                 name="committeeId"
-                isRequired={false}
                 options={getTransformedSelectOptions({
                   data: committees,
                   labelKey: "name",

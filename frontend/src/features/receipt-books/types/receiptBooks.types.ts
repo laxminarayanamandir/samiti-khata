@@ -12,7 +12,7 @@ export type ReceiptBook = ReceiptBookSchema &
     committee: {
       id: number;
       name: string;
-    } | null;
+    };
     assignedMember: null | {
       id: number;
       name: string;
