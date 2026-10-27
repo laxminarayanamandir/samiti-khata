@@ -59,6 +59,10 @@ export default function ReceiptBookDetailsDialog({
                   <h3 className="text-muted-foreground">Fiscal Year</h3>
                   <p>{data.fiscalYear?.name}</p>
                 </div>
+                <div className="space-y-2">
+                  <h3 className="text-muted-foreground">Committee</h3>
+                  <p>{data.committee?.name ?? "-"}</p>
+                </div>
               </div>
             </div>
 
