@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import clsx from "clsx";
-import { EditIcon } from "lucide-react";
+import { EditIcon, LoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import getNepaliDate from "@/lib/getNepaliDate";
 import { Separator } from "@/components/ui/separator";
@@ -28,7 +28,7 @@ export default function ReceiptBookDetailsDialog({
   onClose,
   onUpdateClick,
 }: Props) {
-  const { data } = useGetReceiptBookDetails(id);
+  const { data, isPending, isError, error } = useGetReceiptBookDetails(id);
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -126,15 +126,32 @@ export default function ReceiptBookDetailsDialog({
               </div>
             </div>
           </div>
+        ) : isPending ? (
+          <div
+            className="flex min-h-40 items-center justify-center gap-2 text-sm text-muted-foreground"
+            role="status"
+            aria-live="polite"
+          >
+            <LoaderCircle className="size-5 animate-spin" aria-hidden="true" />
+            Loading receipt book details...
+          </div>
+        ) : isError ? (
+          <p className="py-10 text-center text-sm text-destructive" role="alert">
+            Could not load receipt book details: {error.message}
+          </p>
         ) : (
-          <p className="text-center py-10">No data found</p>
+          <p className="py-10 text-center text-sm text-muted-foreground">
+            No data found.
+          </p>
         )}
-        <DialogFooter>
+        <DialogFooter className="gap-2">
+          {data && (
+            <Button onClick={() => onUpdateClick?.()}>
+              <EditIcon className="size-4" />
+              Update Status
+            </Button>
+          )}
           <DialogClose render={<Button variant="outline">Close</Button>} />
-          <Button onClick={() => onUpdateClick?.()}>
-            <EditIcon className="size-4" />
-            Update Status
-          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

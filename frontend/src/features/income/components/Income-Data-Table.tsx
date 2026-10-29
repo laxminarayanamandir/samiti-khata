@@ -18,7 +18,6 @@ import type { SearchableColumns } from "@/types/pagination.types";
 import DeleteIncomeAlertDialog from "./Delete-Income-Alert-Dialog";
 import { useState, type Dispatch, type SetStateAction } from "react";
 import SelectCommitteeFilter from "@/features/committees/components";
-import { SelectReceiptBookFilter } from "@/features/receipt-books/components";
 import { ClearFilterButton } from "@/components/shared/data-table/components";
 import UpdateIncomeReceiptSheet from "./Update-Income-Receipt-Sheet";
 import { Input } from "@/components/ui/input";
