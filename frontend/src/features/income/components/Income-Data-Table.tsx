@@ -64,7 +64,7 @@ export default function IncomeDataTable<TData extends RowData>({
   search,
   sorting,
   committeeId,
-  receiptBookId,
+  // receiptBookId,
   minAmount,
   maxAmount,
   setCommitteeId,
