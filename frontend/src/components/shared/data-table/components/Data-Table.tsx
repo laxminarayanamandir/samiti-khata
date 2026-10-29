@@ -30,7 +30,7 @@ export default function DataTable<T extends RowData>({
       className={cn(
         "rounded-md border",
         scrollRows
-          ? "data-table-rows-scroll min-h-0 flex-1 overflow-y-auto"
+          ? "min-h-0 flex-1 overflow-y-auto"
           : "max-h-[calc(100vh-220px)] overflow-auto",
       )}
     >

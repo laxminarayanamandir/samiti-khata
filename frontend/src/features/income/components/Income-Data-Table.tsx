@@ -124,10 +124,10 @@ export default function IncomeDataTable<TData extends RowData>({
           }}
         />
 
-        <SelectReceiptBookFilter
+        {/* <SelectReceiptBookFilter
           receiptBookId={receiptBookId}
           setReceiptBookId={setReceiptBookId}
-        />
+        /> */}
 
         <SelectCommitteeFilter
           committeeId={committeeId}
