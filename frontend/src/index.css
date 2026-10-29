@@ -131,3 +131,32 @@
     @apply font-sans;
     }
 }
+
+* {
+    scrollbar-color: color-mix(
+        in oklch,
+        var(--muted-foreground) 55%,
+        var(--background)
+    ) transparent;
+    scrollbar-width: thin;
+}
+
+*::-webkit-scrollbar {
+    width: 0.5rem;
+    height: 0.5rem;
+}
+
+*::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+    border: 2px solid transparent;
+    border-radius: 9999px;
+    background-color: color-mix(
+        in oklch,
+        var(--muted-foreground) 55%,
+        var(--background)
+    );
+    background-clip: padding-box;
+}
