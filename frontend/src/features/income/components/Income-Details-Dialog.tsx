@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import clsx from "clsx";
-import { EditIcon, Trash2 } from "lucide-react";
+import { EditIcon, LoaderCircle, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { formatNPR } from "@/lib/formatNepaliCurrency";
@@ -30,7 +30,7 @@ export default function IncomeDetailsDialog({
   onDeleteClick,
   onUpdateClick,
 }: Props) {
-  const { data } = useGetIncomeDetails(id);
+  const { data, isPending, isError, error } = useGetIncomeDetails(id);
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -148,19 +148,38 @@ export default function IncomeDetailsDialog({
               </div>
             </div>
           </div>
+        ) : isPending ? (
+          <div
+            className="flex min-h-40 items-center justify-center gap-2 text-sm text-muted-foreground"
+            role="status"
+            aria-live="polite"
+          >
+            <LoaderCircle className="size-5 animate-spin" aria-hidden="true" />
+            Loading income details...
+          </div>
+        ) : isError ? (
+          <p className="py-10 text-center text-sm text-destructive" role="alert">
+            Could not load income details: {error.message}
+          </p>
         ) : (
-          <p className="text-center py-10">No data found</p>
+          <p className="py-10 text-center text-sm text-muted-foreground">
+            No data found.
+          </p>
         )}
-        <DialogFooter>
+        <DialogFooter className="gap-2">
+          {data && (
+            <>
+              <Button variant="destructive" onClick={() => onDeleteClick?.()}>
+                <Trash2 className="size-4" />
+                Delete
+              </Button>
+              <Button onClick={() => onUpdateClick?.()}>
+                <EditIcon className="size-4" />
+                Update
+              </Button>
+            </>
+          )}
           <DialogClose render={<Button variant="outline">Close</Button>} />
-          <Button variant="destructive" onClick={() => onDeleteClick?.()}>
-            <Trash2 className="size-4" />
-            Delete
-          </Button>
-          <Button onClick={() => onUpdateClick?.()}>
-            <EditIcon className="size-4" />
-            Update
-          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

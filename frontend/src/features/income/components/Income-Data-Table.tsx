@@ -18,7 +18,6 @@ import type { SearchableColumns } from "@/types/pagination.types";
 import DeleteIncomeAlertDialog from "./Delete-Income-Alert-Dialog";
 import { useState, type Dispatch, type SetStateAction } from "react";
 import SelectCommitteeFilter from "@/features/committees/components";
-import { SelectReceiptBookFilter } from "@/features/receipt-books/components";
 import { ClearFilterButton } from "@/components/shared/data-table/components";
 import UpdateIncomeReceiptSheet from "./Update-Income-Receipt-Sheet";
 import { Input } from "@/components/ui/input";
@@ -65,7 +64,7 @@ export default function IncomeDataTable<TData extends RowData>({
   search,
   sorting,
   committeeId,
-  receiptBookId,
+  // receiptBookId,
   minAmount,
   maxAmount,
   setCommitteeId,
@@ -114,8 +113,8 @@ export default function IncomeDataTable<TData extends RowData>({
   };
 
   return (
-    <div className="space-y-6 flex min-h-0 flex-col">
-      <div className="flex flex-wrap items-center gap-3">
+    <div className="flex min-h-0 flex-1 flex-col gap-6">
+      <div className="flex shrink-0 flex-wrap items-center gap-3">
         <DataTableSearch
           key={search.searchKey}
           search={search}
@@ -124,10 +123,10 @@ export default function IncomeDataTable<TData extends RowData>({
           }}
         />
 
-        <SelectReceiptBookFilter
+        {/* <SelectReceiptBookFilter
           receiptBookId={receiptBookId}
           setReceiptBookId={setReceiptBookId}
-        />
+        /> */}
 
         <SelectCommitteeFilter
           committeeId={committeeId}
@@ -169,6 +168,7 @@ export default function IncomeDataTable<TData extends RowData>({
         table={table}
         isLoading={isLoading}
         onRowClick={handleRowClick}
+        scrollRows
       />
 
       <DataTablePagination

@@ -29,6 +29,7 @@ type Props = {
   items: RecentTransaction[];
   isLoading: boolean;
   error?: string;
+  compactList?: boolean;
 };
 
 export default function RecentTransactionsCard({
@@ -40,6 +41,7 @@ export default function RecentTransactionsCard({
   items,
   isLoading,
   error,
+  compactList = false,
 }: Props) {
   const amountClass =
     tone === "income" ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400";
@@ -96,7 +98,11 @@ export default function RecentTransactionsCard({
             No records yet.
           </p>
         ) : (
-          <ul className="max-h-136 divide-y overflow-y-auto">
+          <ul
+            className={`${
+              compactList ? "max-h-80" : "max-h-136"
+            } divide-y overflow-y-auto`}
+          >
             {items.map((item) => (
               <li
                 key={item.id}

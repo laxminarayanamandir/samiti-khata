@@ -62,7 +62,7 @@ export default function ReceiptBookPage() {
         />
         <CreateReceiptBookSheet />
       </PageHeader>
-      <PageSection>
+      <PageSection className="flex min-h-0 flex-1 flex-col overflow-hidden pb-5">
         <ReceiptBookDataTable
           data={receiptResponse?.data}
           columns={receiptBookDataTableColumns}
