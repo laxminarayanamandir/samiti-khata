@@ -102,8 +102,8 @@ export default function ReceiptBookDataTable<TData extends RowData>({
   };
 
   return (
-    <div className="space-y-6 flex min-h-0 flex-col">
-      <div className="flex items-center gap-2 flex-wrap">
+    <div className="flex min-h-0 flex-1 flex-col gap-6">
+      <div className="flex shrink-0 items-center gap-2 flex-wrap">
         <DataTableSearch
           key={search.searchKey}
           search={search}
@@ -134,6 +134,7 @@ export default function ReceiptBookDataTable<TData extends RowData>({
         table={table}
         isLoading={isLoading}
         onRowClick={handleRowClick}
+        scrollRows
       />
 
       <DataTablePagination

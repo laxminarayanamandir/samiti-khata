@@ -8,12 +8,14 @@ import {
 } from "@/components/ui/table";
 import type { ColumnDef, ReactTable, RowData } from "@tanstack/react-table";
 import type { DataTableFeatures } from "../Data-Table-Features";
+import { cn } from "@/lib/utils";
 
 type Props<T extends RowData> = {
   table: ReactTable<DataTableFeatures, T>;
   columns: ColumnDef<DataTableFeatures, T>[];
   isLoading: boolean;
   onRowClick?: (id: string) => void;
+  scrollRows?: boolean;
 };
 
 export default function DataTable<T extends RowData>({
@@ -21,10 +23,21 @@ export default function DataTable<T extends RowData>({
   columns,
   isLoading,
   onRowClick,
+  scrollRows = false,
 }: Props<T>) {
   return (
-    <div className="max-h-[calc(100vh-220px)] overflow-auto rounded-md border">
-      <Table className="w-full min-w-full">
+    <div
+      className={cn(
+        "rounded-md border",
+        scrollRows
+          ? "data-table-rows-scroll min-h-0 flex-1 overflow-y-auto"
+          : "max-h-[calc(100vh-220px)] overflow-auto",
+      )}
+    >
+      <Table
+        className="w-full min-w-full"
+        containerClassName={scrollRows ? "overflow-visible" : undefined}
+      >
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow

@@ -95,7 +95,7 @@ export default function IncomePage() {
           maxAmount: parseAmount(debouncedMaxAmount),
         }}
       />
-      <PageSection>
+      <PageSection className="flex min-h-0 flex-1 flex-col overflow-hidden pb-5">
         <IncomeDataTable
           data={incomeResponse?.data}
           columns={incomeDataTableColumns}

@@ -114,8 +114,8 @@ export default function IncomeDataTable<TData extends RowData>({
   };
 
   return (
-    <div className="space-y-6 flex min-h-0 flex-col">
-      <div className="flex flex-wrap items-center gap-3">
+    <div className="flex min-h-0 flex-1 flex-col gap-6">
+      <div className="flex shrink-0 flex-wrap items-center gap-3">
         <DataTableSearch
           key={search.searchKey}
           search={search}
@@ -169,6 +169,7 @@ export default function IncomeDataTable<TData extends RowData>({
         table={table}
         isLoading={isLoading}
         onRowClick={handleRowClick}
+        scrollRows
       />
 
       <DataTablePagination
